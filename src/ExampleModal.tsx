@@ -1,15 +1,23 @@
 
-import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Form, FormGroup } from 'reactstrap';
-import ExampleForm from './ExampleForm';
+import React, { useCallback, useState } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import ExampleForm, { IExampleFormValues } from './ExampleForm';
 
-const ExampleModal = (props: any) => {
-    const {
-        className
-    } = props;
+const FORM_ID = 'example-form';
+
+export interface IExampleModalProps {
+    className?: string;
+}
+
+const ExampleModal = ({ className }: IExampleModalProps) => {
     const [modal, setModal] = useState(false);
 
-    const toggle = () => setModal(!modal);
+    const toggle = useCallback(() => setModal(!modal), [modal]);
+    const onSubmit = useCallback((data: IExampleFormValues) => {
+        console.log('%cSubmitted!', 'color:green', data);
+        toggle();
+        alert('Submitted!\n' + JSON.stringify(data, null, '\t'));
+    }, [toggle]);
 
     return (
         <React.Fragment>
@@ -17,10 +25,11 @@ const ExampleModal = (props: any) => {
             <Modal isOpen={modal} toggle={toggle} className={className}>
                 <ModalHeader toggle={toggle}>Modal title</ModalHeader>
                 <ModalBody>
-                    <ExampleForm />
+                    <ExampleForm formId={FORM_ID} onSubmit={onSubmit} />
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={toggle}>Do Something</Button>{' '}
+                    {/* We can use the form={FORM_ID} to make this button submit the inner form. */}
+                    <Button color="primary" form={FORM_ID} type="submit">Do Something</Button>
                     <Button color="secondary" onClick={toggle}>Cancel</Button>
                 </ModalFooter>
             </Modal>
